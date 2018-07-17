@@ -32,7 +32,8 @@ export default Styles = StyleSheet.create({
         elevation: 1,
         marginLeft: 5,
         marginRight: 5,
-        marginTop: 10
+        marginTop: 10,
+        marginBottom: 10
     },
     cardSectionStyle: {
         paddingTop: 5,

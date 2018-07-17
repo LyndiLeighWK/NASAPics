@@ -9,7 +9,13 @@ import CardSection from './CardSection';
 import Header from './Header';
 import Button from './Button';
 
+
 class HomeScreen extends React.Component {
+
+    static get API_ENDPOINT() { return 'https://api.nasa.gov/planetary/apod?api_key=IJ7ZRsSIGvLapSPjhfojEmWhBNyejCYN9F1qJQjL'; }
+    static get ORIG_DATE_FORMAT() { return 'YYYY-MM-DD'; }
+    static get DESIRED_DATE_FORMAT() { return 'MMMM D, YYYY'; }
+
     constructor(props){
         super(props);
         this.state = {
@@ -21,10 +27,11 @@ class HomeScreen extends React.Component {
 
     componentWillMount() {
         //Fetch Today's Content
-        axios.get('https://api.nasa.gov/planetary/apod?api_key=IJ7ZRsSIGvLapSPjhfojEmWhBNyejCYN9F1qJQjL')
+        axios.get(HomeScreen.API_ENDPOINT)
         .then(response => this.setState({picOfTheDay: response.data}))
         .catch(error => { console.log('caught', error.message) });
 
+        // Dummy Data for Building out Screen without API calls
         // var defaultPic = {
         //     url : 'https://apod.nasa.gov/apod/image/1807/Capture13_07_2018_2_09_09AM_PK1024.jpg',
         //     title : 'A Nibble on the Sun',
@@ -39,29 +46,29 @@ class HomeScreen extends React.Component {
 
     onNavigateForward(){
         // Add day to current state date
-        var nextDate = new moment(this.state.picOfTheDay.date).add(1, 'day').format("YYYY-MM-DD");
+        var nextDate = new moment(this.state.picOfTheDay.date).add(1, 'day').format(HomeScreen.ORIG_DATE_FORMAT);
         // Fetch new content
         this.navigateToNewDay(nextDate);
     };
 
     onNavigateBackward() {
         // Subtract day to current state date
-        var previousDate = new moment(this.state.picOfTheDay.date).subtract(1, 'day').format("YYYY-MM-DD");
+        var previousDate = new moment(this.state.picOfTheDay.date).subtract(1, 'day').format(HomeScreen.ORIG_DATE_FORMAT);
         // Fetch new content
         this.navigateToNewDay(previousDate);
     };
 
     formatDate() {
-        return moment(this.state.picOfTheDay.date, "YYYY-MM-DD").format("MMMM D, YYYY");
+        return moment(this.state.picOfTheDay.date, HomeScreen.ORIG_DATE_FORMAT).format(HomeScreen.DESIRED_DATE_FORMAT);
     };
 
     checkIfForwardNavAvailable() {
-        return moment().format("MMMM D, YYYY") == moment(this.state.picOfTheDay.date, "YYYY-MM-DD").format("MMMM D, YYYY");
+        return moment().format(HomeScreen.DESIRED_DATE_FORMAT) == moment(this.state.picOfTheDay.date, HomeScreen.ORIG_DATE_FORMAT).format(HomeScreen.DESIRED_DATE_FORMAT);
     };
 
     navigateToNewDay(newDay){
         // Fetch new content
-        axios.get('https://api.nasa.gov/planetary/apod?api_key=IJ7ZRsSIGvLapSPjhfojEmWhBNyejCYN9F1qJQjL&date=' + newDay)
+        axios.get(HomeScreen.API_ENDPOINT + '&date=' + newDay)
         // Update state
         .then(response => this.setState({picOfTheDay: response.data}))
         .catch(error => { console.log('caught', error.message) });
